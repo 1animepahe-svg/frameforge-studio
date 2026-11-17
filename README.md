@@ -1,6 +1,6 @@
 # Frameforge
 
-Independent static browser-local MP4/MOV fast-start optimizer. Published at https://1animepahe-svg.github.io/frameforge-studio/; source repository: https://github.com/1animepahe-svg/frameforge-studio. No build, packages, backend, CDN, accounts, payments, or third-party assets are required to run the app. To host your own copy, place `index.html`, `style.css`, `optimizer.js`, and `app.js` together on a static web server. Hash navigation works under repository subpaths.
+Independent static browser-local MP4/MOV fast-start optimizer. No deployment, build, packages, backend, CDN, accounts, payments, or third-party assets are required. Copy `index.html`, `style.css`, `optimizer.js`, and `app.js` together to the root of a GitHub Pages site, or serve the folder with any static web server. Hash navigation works under repository subpaths. GitHub Pages is not configured or published by this project.
 
 ## How it works
 
