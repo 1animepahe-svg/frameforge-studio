@@ -16,10 +16,13 @@ function start(file){
   }else{
     try{first=file.arrayBuffer()}catch(e){first=Promise.reject(e)}
   }
-  return Promise.resolve(first).then(buffer=>{
+  // Only reading/length failures should trigger the fallback. A failed Blob
+  // allocation must not cause a second full read under memory pressure.
+  const complete=Promise.resolve(first).then(buffer=>{
     if(!(buffer instanceof ArrayBuffer)||buffer.byteLength!==file.size)throw new DOMException('Incomplete file read','NotReadableError');
-    return new Blob([buffer],{type:file.type});
-  }).catch(async error=>{
+    return buffer;
+  });
+  return complete.then(buffer=>new Blob([buffer],{type:file.type}),async error=>{
     if(error && error.name==='AbortError')throw error;
     // Some providers permit a sequential stream even when the whole-file read
     // failed. This is best effort; it cannot restore a revoked permission.
@@ -33,7 +36,9 @@ function start(file){
         if(!(value instanceof Uint8Array))throw new Error('Invalid stream chunk');
         total+=value.byteLength;
         if(total>file.size)throw new Error('Stream exceeds reported size');
-        parts.push(value);
+        // A stream may reuse or mutate its backing buffer on the next read.
+        // Keep our own copy of exactly the bytes in this view.
+        parts.push(new Uint8Array(value));
       }
       if(total!==file.size)throw new Error('Incomplete stream');
       return new Blob(parts,{type:file.type});
